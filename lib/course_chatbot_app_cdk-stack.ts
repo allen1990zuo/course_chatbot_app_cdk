@@ -45,7 +45,7 @@ export class CourseChatbotAppCdkStack extends cdk.Stack {
     // Create EC2 instance
     const instance = new ec2.Instance(this, 'courseChatbotInstance', {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
-      machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+      machineImage: ec2.MachineImage.latestAmazonLinux2(),
       vpc,
       role: ec2Role,
       securityGroup: sg,
@@ -104,11 +104,11 @@ export class CourseChatbotAppCdkStack extends cdk.Stack {
 
      // Create a Route 53 hosted zone
      const zone = new route53.PublicHostedZone(this, 'courseChatbotZone', {
-      zoneName: 'www.course.chatbot.com',
+      zoneName: 'course.chatbot.com',
     });
 
     const aRecord = new route53.ARecord(this, 'courseChatbotARecord', {
-      recordName: 'www.test.course.chatbot.com',
+      recordName: 'course.chatbot.com',
       zone: zone,
       target: route53.RecordTarget.fromIpAddresses(eip.ref),
     });
