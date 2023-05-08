@@ -80,6 +80,19 @@ export class CourseChatbotAppCdkStack extends cdk.Stack {
       'systemctl enable chatbot.service',
     )
 
+    // install python3.9, need manually steps
+    // ./configure --enable-optimizations --prefix=/usr/local
+    // make -j 4
+    // sudo make altinstall
+    // sudo ln -sf /usr/local/bin/python3.9 /usr/bin/python3
+
+    instance.addUserData(
+      'yum update -y',
+      'yum install -y gcc openssl-devel bzip2-devel libffi-devel zlib-devel tk-devel readline-devel sqlite-devel',
+      'wget https://www.python.org/ftp/python/3.9.0/Python-3.9.0.tgz -O /var/tmp/Python-3.9.0.tgz',
+      'tar -xzf /var/tmp/Python-3.9.0.tgz -C /var/tmp'
+    )
+
     // install pip
     instance.addUserData(
       'yum update -y',
