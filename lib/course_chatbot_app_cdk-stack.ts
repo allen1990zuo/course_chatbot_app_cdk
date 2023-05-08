@@ -61,7 +61,8 @@ export class CourseChatbotAppCdkStack extends cdk.Stack {
     instance.addUserData(
       'yum update -y',
       'yum install git -y',
-      'yum install nginx -y',
+      // 'yum install nginx -y',
+      'sudo amazon-linux-extras install nginx1 -y',
       'mkdir /etc/nginx/ssl',
       `echo "${nginxConfigFile}" > /etc/nginx/nginx.conf`,
       `echo "${publicKeyFile}" > /etc/nginx/ssl/cert.pem`,
@@ -86,36 +87,31 @@ export class CourseChatbotAppCdkStack extends cdk.Stack {
       'pip3 install virtualenv'
     )
 
-    // Allow the EC2 instance to access SSM
-    instance.role!.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
+    // install certbot
+    instance.addUserData(
+      'yum update -y',
+      'sudo amazon-linux-extras install epel -y',
+      'sudo yum install certbot -y',
+      'sudo yum install certbot-nginx -y'
+    )
 
     // Allow the EC2 instance to access SSM
     instance.role!.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
 
-    // Allow an Elastic IP address for this instance
-    const eip = new ec2.CfnEIP(this, 'courseChatbotEip', {
-      domain: 'vpc',
-    });
+    // Allow the EC2 instance to access SSM
+    instance.role!.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
 
-    const eipAssoc = new ec2.CfnEIPAssociation(this, 'courseChatbotEipAssoc', {
-      eip: eip.ref,
-      instanceId: instance.instanceId,
-    });
-
-     // Create a Route 53 hosted zone
-     const zone = new route53.PublicHostedZone(this, 'courseChatbotZone', {
-      zoneName: 'course.chatbot.com',
-    });
-
-    const aRecord = new route53.ARecord(this, 'courseChatbotARecord', {
-      recordName: 'course.chatbot.com',
-      zone: zone,
-      target: route53.RecordTarget.fromIpAddresses(eip.ref),
-    });
-
-    // Output the instance public IP address
-    new cdk.CfnOutput(this, 'courseChatbotPublicIp', {
-      value: instance.instancePublicIp!,
+    const hostedZoneId = 'Z09029461HKF9DVN00TE2'; // replace with your hosted zone ID
+    const domainName = 'profanswers.com'; // replace with your domain name
+    const instancePublicIp = instance.instancePublicIp;
+    
+    new route53.ARecord(this, 'chatbotRecord', {
+      zone: route53.HostedZone.fromHostedZoneAttributes(this, 'chatbotZone', {
+        hostedZoneId: hostedZoneId,
+        zoneName: domainName,
+      }),
+      recordName: 'www', // replace with your subdomain name, e.g. 'www'
+      target: route53.RecordTarget.fromIpAddresses(instancePublicIp),
     });
   }
 }
