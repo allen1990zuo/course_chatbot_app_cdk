@@ -108,6 +108,19 @@ export class CourseChatbotAppCdkStack extends cdk.Stack {
       'sudo yum install certbot-nginx -y'
     )
 
+    // need to update openssl to 1.1.1+
+    // sudo yum install -y make gcc zlib-devel
+    // wget https://www.openssl.org/source/openssl-1.1.1k.tar.gz
+    // tar -xzf openssl-1.1.1k.tar.gz
+    // cd openssl-1.1.1k
+    // ./config --prefix=/usr/local/ssl --openssldir=/usr/local/ssl shared zlib
+    // make
+    // sudo make install
+    // export LD_LIBRARY_PATH=/usr/local/ssl/lib:$LD_LIBRARY_PATH
+
+
+
+
     // Allow the EC2 instance to access SSM
     instance.role!.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
 
