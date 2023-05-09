@@ -45,7 +45,7 @@ export class CourseChatbotAppCdkStack extends cdk.Stack {
     // Create EC2 instance
     const instance = new ec2.Instance(this, 'courseChatbotInstance', {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
-      machineImage: ec2.MachineImage.latestAmazonLinux2(),
+      machineImage: ec2.MachineImage.latestAmazonLinux2023(),
       vpc,
       role: ec2Role,
       securityGroup: sg,
@@ -61,8 +61,8 @@ export class CourseChatbotAppCdkStack extends cdk.Stack {
     instance.addUserData(
       'yum update -y',
       'yum install git -y',
-      // 'yum install nginx -y',
-      'sudo amazon-linux-extras install nginx1 -y',
+      'yum install nginx -y',
+      // 'sudo amazon-linux-extras install nginx1 -y',
       'mkdir /etc/nginx/ssl',
       `echo "${nginxConfigFile}" > /etc/nginx/nginx.conf`,
       `echo "${publicKeyFile}" > /etc/nginx/ssl/cert.pem`,
@@ -85,13 +85,12 @@ export class CourseChatbotAppCdkStack extends cdk.Stack {
     // make -j 4
     // sudo make altinstall
     // sudo ln -sf /usr/local/bin/python3.9 /usr/bin/python3
-
-    instance.addUserData(
-      'yum update -y',
-      'yum install -y gcc openssl-devel bzip2-devel libffi-devel zlib-devel tk-devel readline-devel sqlite-devel',
-      'wget https://www.python.org/ftp/python/3.9.0/Python-3.9.0.tgz -O /var/tmp/Python-3.9.0.tgz',
-      'tar -xzf /var/tmp/Python-3.9.0.tgz -C /var/tmp'
-    )
+    // instance.addUserData(
+    //   'yum update -y',
+    //   'yum install -y gcc openssl-devel bzip2-devel libffi-devel zlib-devel tk-devel readline-devel sqlite-devel',
+    //   'wget https://www.python.org/ftp/python/3.9.0/Python-3.9.0.tgz -O /var/tmp/Python-3.9.0.tgz',
+    //   'tar -xzf /var/tmp/Python-3.9.0.tgz -C /var/tmp'
+    // )
 
     // install pip
     instance.addUserData(
@@ -101,12 +100,12 @@ export class CourseChatbotAppCdkStack extends cdk.Stack {
     )
 
     // install certbot
-    instance.addUserData(
-      'yum update -y',
-      'sudo amazon-linux-extras install epel -y',
-      'sudo yum install certbot -y',
-      'sudo yum install certbot-nginx -y'
-    )
+    // instance.addUserData(
+    //   'yum update -y',
+    //   'sudo amazon-linux-extras install epel -y',
+    //   'sudo yum install certbot -y',
+    //   'sudo yum install certbot-nginx -y'
+    // )
 
     // need to update openssl to 1.1.1+
     // sudo yum install -y make gcc zlib-devel
